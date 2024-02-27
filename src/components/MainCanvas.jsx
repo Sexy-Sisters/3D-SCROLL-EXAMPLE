@@ -2,8 +2,14 @@ import { Box, OrbitControls, ScrollControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import { Dancer } from "./Dancer";
-
+import { Loader } from "./Loader";
+import { Suspense } from "react";
+import { MovingDOM } from "../dom/MovingDOM";
+import { useRecoilValue } from "recoil";
+import { IsEnteredAtom } from "../store";
 export const MainCanvas = () => {
+  const isEntered = useRecoilValue(IsEnteredAtom);
+
   const aspectRatio = window.innerWidth / window.innerHeight;
 
   return (
@@ -24,8 +30,11 @@ export const MainCanvas = () => {
         background: new THREE.Color(0x000000),
       }}
     >
-      <ScrollControls pages={8} damping={0.25}>
-        <Dancer />
+      <ScrollControls pages={isEntered ? 8 : 0} damping={0.25}>
+        <Suspense fallback={<Loader />}>
+          <MovingDOM />
+          <Dancer />
+        </Suspense>
       </ScrollControls>
       {/* <Box material-color={0xff0000} /> */}
     </Canvas>
