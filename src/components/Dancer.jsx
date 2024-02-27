@@ -1,11 +1,13 @@
 import { useAnimations, useGLTF, useScroll } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { IsEnteredAtom } from "../store";
 import { Loader } from "./Loader";
+import gsap from "gsap";
 
 export const Dancer = () => {
+  const three = useThree();
   const isEntered = useRecoilValue(IsEnteredAtom);
   const dancerRef = useRef(null);
 
@@ -21,6 +23,35 @@ export const Dancer = () => {
     if (!isEntered) return;
     actions["wave"].play();
   }, [actions, isEntered]);
+
+  useEffect(() => {
+    if (!isEntered) return;
+    if (!dancerRef.current) return;
+    gsap.fromTo(
+      three.camera.position,
+      {
+        x: -5,
+        y: 5,
+        z: 5,
+      },
+      {
+        x: 0,
+        y: 6,
+        z: 12,
+        duration: 3.5, //속도
+      }
+    );
+
+    //카메라 엥글 변경
+    gsap.fromTo(
+      three.camera.rotation,
+      { z: Math.PI },
+      {
+        duration: 2.5,
+        z: 0,
+      }
+    );
+  }, [isEntered, three.camera.position]);
 
   if (!isEntered) {
     return <Loader isCompleted />;
